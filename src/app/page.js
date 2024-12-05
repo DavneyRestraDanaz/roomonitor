@@ -12,17 +12,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Custom Icons with Vibrant Colors
+// More Thematic and Detailed Custom Icons
 const Icons = {
   Thermometer: () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF4D4D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>
+      <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
       <line x1="12" y1="12" x2="12.01" y2="12"/>
     </svg>
   ),
   Humidity: () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4ECDC4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+      <path d="M8 13a4 4 0 0 0 8 0"/>
     </svg>
   ),
   Motion: () => (
@@ -31,19 +32,19 @@ const Icons = {
       <path d="M12 12v4"/>
       <path d="M16 16h4"/>
       <path d="M4 12h4"/>
+      <circle cx="12" cy="16" r="2" fill="#6A5ACD"/>
     </svg>
   ),
   Water: () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3498DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21.42 10.922a2 2 0 0 1-1.56-1.22A5.48 5.48 0 0 0 14.88 6c-.61 0-1.21.1-1.77.28a2 2 0 0 1-2.22-.52l-1.27-1.4a2 2 0 0 1 0-2.64L9.12 2"/>
-      <path d="m12 3-1.29 1.29a2 2 0 0 0 0 2.82l5.58 5.58a2 2 0 0 1 0 2.83l-8.58 8.59a2 2 0 1 1-2.83-2.83l8.58-8.58a2 2 0 0 0 0-2.83L10.71 5.7"/>
+      <path d="M12 22a9 9 0 0 1-9-9c0-2 0.5-3.5 1-5c1.5-3 3.5-5.5 9-11c5.5 5.5 7.5 8 9 11c0.5 1.5 1 3 1 5a9 9 0 0 1-9 9z"/>
+      <path d="M8 14c2.5 2 5.5 2 8 0"/>
     </svg>
   ),
-  Api: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9C27B0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-      <path d="m15 9-6 6"/>
-      <path d="m9 9 6 6"/>
+  Fire: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 12c2-3 1-5-1-7c-1.5 1.5-3 3.5-3 5.5a4 4 0 0 0 8 0c0-1.5-1-4-2-5.5c-2 2-3 4-1 7z"/>
+      <path d="M12 22a5 5 0 0 0 3-2a5 5 0 0 0-3-5a5 5 0 0 0-3 5a5 5 0 0 0 3 2z"/>
     </svg>
   ),
 };
@@ -52,6 +53,7 @@ const SensorDashboard = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedSensor, setSelectedSensor] = useState(null);
 
   useEffect(() => {
     const fetchSensorData = async () => {
@@ -84,36 +86,55 @@ const SensorDashboard = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const renderSensorCard = (Icon, title, value, status, trend) => (
-    <div className="group bg-white rounded-2xl shadow-lg hover:shadow-xl 
-      transition-all duration-300 transform hover:scale-105 p-5 
-      relative overflow-hidden border-2 border-gray-100 
-      hover:border-blue-200 cursor-pointer">
+  const renderSensorCard = (Icon, title, value, status, detailContent) => (
+    <div 
+      onClick={() => setSelectedSensor({title, detailContent})}
+      className={`group bg-white rounded-3xl shadow-lg hover:shadow-2xl 
+        transition-all duration-300 transform hover:scale-105 p-6 
+        relative overflow-hidden border-2 border-gray-100 
+        hover:border-blue-200 cursor-pointer space-y-4
+        ${status ? 'animate-pulse-border' : ''}`}
+    >
       
       <div className="absolute top-0 right-0 opacity-10 group-hover:opacity-20 
-        transition-opacity scale-150">
+        transition-opacity scale-150 z-0">
         <Icon />
       </div>
       
-      <div className="flex justify-between items-center mb-4">
-        <div className="p-3 rounded-full bg-blue-50 group-hover:bg-blue-100 
-          transition-colors flex items-center justify-center">
+      <div className="flex justify-between items-center z-10 relative">
+        <div className={`p-3 rounded-full bg-blue-50 group-hover:bg-blue-100 
+          transition-colors flex items-center justify-center
+          ${status ? 'animate-pulse' : ''}`}>
           <Icon />
-        </div>
-        
-        <div className={`flex items-center ${trend > 0 ? 'text-green-500' : 'text-red-500'}`}>
-          <span className="text-sm font-medium ml-2">
-            {trend > 0 ? '▲' : '▼'} {Math.abs(trend)}%
-          </span>
         </div>
       </div>
       
-      <div>
-        <h3 className="text-sm font-semibold text-gray-600 mb-2">{title}</h3>
+      <div className="space-y-2">
+        <h3 className="text-sm font-semibold text-gray-600">{title}</h3>
         <p className="text-2xl font-bold text-gray-800">{value}</p>
-        <p className={`text-xs mt-1 ${status ? 'text-green-600' : 'text-red-600'}`}>
+        <p className={`text-xs ${status ? 'text-green-600 animate-pulse' : 'text-red-600'}`}>
           {status ? 'Active' : 'Inactive'}
         </p>
+      </div>
+    </div>
+  );
+
+  // Sensor Detail Modal
+  const SensorModal = ({ sensor, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">{sensor.title} Details</h2>
+          <button 
+            onClick={onClose} 
+            className="text-gray-500 hover:text-gray-800 text-2xl"
+          >
+            ×
+          </button>
+        </div>
+        <div className="space-y-4">
+          {sensor.detailContent}
+        </div>
       </div>
     </div>
   );
@@ -132,7 +153,7 @@ const SensorDashboard = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-red-50">
-        <div className="bg-white p-8 rounded-2xl shadow-xl text-center">
+        <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md mx-auto">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Data Fetch Error</h2>
           <p className="text-gray-700">{error}</p>
@@ -144,13 +165,44 @@ const SensorDashboard = () => {
   const latestData = data.length > 0 ? data[data.length - 1] : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-      <div className="container mx-auto max-w-6xl">
-        <header className="flex justify-between items-center mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
+      {/* Sensor Detail Modal */}
+      {selectedSensor && (
+        <SensorModal 
+          sensor={{
+            ...selectedSensor,
+            detailContent: selectedSensor.title === "Motion Sensor" ? (
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <p className="text-yellow-800">
+                  Motion detected in the <strong>Living Room</strong>
+                </p>
+                <p className="text-sm text-yellow-600 mt-2">
+                  Detected at: {latestData?.timestamp}
+                </p>
+                <div className="mt-4 bg-yellow-100 p-3 rounded-md">
+                  <h3 className="text-sm font-semibold text-yellow-900 mb-2">
+                    Additional Information
+                  </h3>
+                  <p className="text-xs text-yellow-700">
+                    • Sensor Range: 10 meters
+                    • Sensitivity: High
+                    • Last Triggered: Just now
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p>No additional details available.</p>
+            )
+          }}
+          onClose={() => setSelectedSensor(null)} 
+        />
+      )}
+      <div className="container mx-auto max-w-7xl">
+        <header className="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12 space-y-4 md:space-y-0">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 text-center md:text-left">
             Smart Sensor Dashboard
           </h1>
-          <div className="text-right">
+          <div className="text-center md:text-right">
             <p className="text-sm text-gray-600">Last Updated</p>
             <p className="font-semibold text-gray-800">
               {latestData?.timestamp || 'N/A'}
@@ -158,49 +210,50 @@ const SensorDashboard = () => {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-8 md:mb-12">
           {renderSensorCard(
             Icons.Thermometer,
             "Temperature",
-            `${latestData?.temperature || 'N/A'}°C`,
+            `${latestData?.temperature || 'N/A'}`,
             true,
-            1.5
+            <div>Temperature details</div>
           )}
           {renderSensorCard(
             Icons.Humidity,
             "Humidity",
-            `${latestData?.humidity || 'N/A'}%`,
+            `${latestData?.humidity || 'N/A'}`,
             true,
-            -0.5
+            <div>Humidity details</div>
           )}
           {renderSensorCard(
             Icons.Water,
             "Water Sensor",
             latestData?.waterSensor ? "Detected" : "No Water",
             !!latestData?.waterSensor,
-            latestData?.waterSensor ? 2 : -1
+            <div>Water sensor details</div>
           )}
           {renderSensorCard(
             Icons.Motion,
             "Motion Sensor",
             latestData?.motionSensor ? "Motion" : "No Motion",
             !!latestData?.motionSensor,
-            latestData?.motionSensor ? 1 : 0
+            // Detailed motion sensor content added above in SensorModal
+            <div>Motion sensor details</div>
           )}
           {renderSensorCard(
-            Icons.Api,
-            "API Status",
-            latestData?.apiSensor ? "Connected" : "Disconnected",
+            Icons.Fire,
+            "Fire Sensor",
+            latestData?.apiSensor ? "Detected" : "Not Detected",
             !!latestData?.apiSensor,
-            latestData?.apiSensor ? 1 : -1
+            <div>Fire sensor details</div>
           )}
         </div>
 
-        <div className="bg-white rounded-3xl shadow-2xl p-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+        <div className="bg-white rounded-3xl shadow-2xl p-4 md:p-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-6 md:mb-8">
             Sensor Analytics
           </h2>
-          <ResponsiveContainer width="100%" height={400}>
+          <ResponsiveContainer width="100%" height={300} className="md:h-[400px]">
             <LineChart data={data}>
               <CartesianGrid 
                 strokeDasharray="3 3" 
@@ -210,9 +263,11 @@ const SensorDashboard = () => {
               <XAxis 
                 dataKey="timestamp" 
                 tick={{ fill: "#666666" }}
+                className="text-xs"
               />
               <YAxis 
                 tick={{ fill: "#666666" }}
+                className="text-xs"
               />
               <Tooltip 
                 contentStyle={{
