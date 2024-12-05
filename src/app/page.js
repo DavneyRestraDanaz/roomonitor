@@ -58,7 +58,7 @@ const SensorDashboard = () => {
   useEffect(() => {
     const fetchSensorData = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/sensors");
+        const response = await fetch("https://api-x-six.vercel.app/api/sensors");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
