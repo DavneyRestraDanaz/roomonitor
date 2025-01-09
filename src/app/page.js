@@ -269,7 +269,7 @@ const SensorDashboard = () => {
         <header className={`flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12 space-y-4 md:space-y-0 ${darkMode ? 'bg-gray-800/80' : 'bg-white/80'} backdrop-blur-lg p-6 rounded-3xl shadow-lg`}>
           <div className="text-center md:text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Smart Sensor Dashboard
+              Smart Room Dashboard
             </h1>
           </div>
           <div className="flex items-center space-x-4">
