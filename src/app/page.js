@@ -88,12 +88,14 @@ const SensorDashboard = () => {
   const [dataRange, setDataRange] = useState("current");
   const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    // Check system preference for dark mode
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setDarkMode(false);
-    }
+  // Function to calculate average
+  const calculateAverage = (key) => {
+    if (data.length === 0) return "N/A";
+    const sum = data.reduce((acc, item) => acc + item[key], 0);
+    return (sum / data.length).toFixed(2);
+  };
 
+  useEffect(() => {
     const fetchSensorData = async () => {
       try {
         const response = await fetch("https://api-x-six.vercel.app/api/sensors");
@@ -124,8 +126,11 @@ const SensorDashboard = () => {
             lamp: item.lamp,
           };
         });
-    
-        setData(processedData);
+
+        // Check if the new data is different from the current data
+        if (JSON.stringify(processedData) !== JSON.stringify(data)) {
+          setData(processedData);
+        }
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -134,9 +139,9 @@ const SensorDashboard = () => {
     };      
 
     fetchSensorData();
-    const intervalId = setInterval(fetchSensorData, 60000);
+    const intervalId = setInterval(fetchSensorData, 3000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [data]);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -386,6 +391,26 @@ const SensorDashboard = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-8">
             Sensor Analytics
           </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className={`p-4 rounded-xl shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'} text-center transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group cursor-pointer relative overflow-hidden`}>
+              <div className={`absolute inset-0 ${darkMode ? 'bg-blue-600/10' : 'bg-blue-50/50'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></div>
+              <h3 className={`text-lg font-bold ${darkMode ? 'text-gray-300' : 'text-gray-700'} relative z-10`}>Rata-rata Temperatur</h3>
+              <p className="text-2xl font-extrabold text-red-500 relative z-10 group-hover:animate-pulse">{calculateAverage('temperature')}°C</p>
+              <div className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} opacity-0 group-hover:opacity-100 transition-opacity duration-300 relative z-10`}>
+                Berdasarkan {data.length} pengukuran terakhir
+              </div>
+            </div>
+            <div className={`p-4 rounded-xl shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'} text-center transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group cursor-pointer relative overflow-hidden`}>
+              <div className={`absolute inset-0 ${darkMode ? 'bg-teal-600/10' : 'bg-teal-50/50'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></div>
+              <h3 className={`text-lg font-bold ${darkMode ? 'text-gray-300' : 'text-gray-700'} relative z-10`}>Rata-rata Kelembaban</h3>
+              <p className="text-2xl font-extrabold text-teal-500 relative z-10 group-hover:animate-pulse">{calculateAverage('humidity')}%</p>
+              <div className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} opacity-0 group-hover:opacity-100 transition-opacity duration-300 relative z-10`}>
+                Berdasarkan {data.length} pengukuran terakhir
+              </div>
+            </div>
+          </div>
+
           <div className="flex justify-center mb-6">
             <div className="relative inline-block">
               <button
